@@ -23,7 +23,7 @@ Return `None` if the account has never existed (including accounts that were mer
 - **This level requires transaction logging from L1-L3.** Every deposit, withdrawal, and transfer must have been recorded with its timestamp. If L3 scheduled payments weren't recorded with their execution timestamp, `get_balance_at` will be wrong.
 - `get_balance_at` returns the balance at exactly `time_at` — include all transactions with `timestamp <= time_at`.
 - Merging does not create a transaction history entry by itself. `account_id1`'s balance just gains `account_id2`'s current balance atomically.
-- Initial balance (from `create_account`) counts as a transaction at timestamp 0 (or the earliest possible time) for `get_balance_at` purposes.
+- Initial balance (from `create_account`) counts as a transaction at timestamp 0 for `get_balance_at` purposes.
 
 ## Examples
 

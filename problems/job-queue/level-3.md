@@ -13,7 +13,7 @@ Now increments the attempt count and schedules a retry instead of immediately ma
 Set retry parameters. Applies to all future failures.
 
 ### `process_retries(current_timestamp)`
-Move all jobs whose retry time has arrived back to pending. Return a list of job_ids that were moved.
+Move all jobs whose retry time has arrived back to pending. Return a sorted list of job_ids that were moved (alphabetical order).
 
 ### `get_dead_letter()`
 Return a list of `[job_id, attempts]` for all jobs in the dead letter queue, sorted by job_id.
@@ -21,8 +21,9 @@ Return a list of `[job_id, attempts]` for all jobs in the dead letter queue, sor
 ## Important
 
 - **This is a data model change.** `fail()` previously set status to "failed" and was done. Now it must track attempt count, compute next retry time, and conditionally move to dead letter.
-- Backoff formula: `base_backoff_seconds * 2^(attempts - 1)` where attempts is the count AFTER the current failure
-- Jobs waiting for retry have status `"retrying"` (distinct from pending, running, failed)
+- `fail()` still returns `True` when a job moves to the dead letter queue (the fail operation succeeded on a running job).
+- `get_status` now has two additional return values: `"retrying"` for jobs awaiting retry, and `"dead_letter"` for jobs that exhausted all attempts.
+- Backoff formula: `base_backoff_seconds * 2^(attempts - 1)` where attempts is the count AFTER the current failure. Retry times accumulate: after the first failure (attempts=1), retry at `t = base_backoff`. After the second failure (attempts=2), retry at `t = base_backoff + base_backoff * 2`. And so on.
 - `dequeue()` must NOT return retrying jobs
 - Retried jobs keep their original priority
 - Default max_attempts is 3, default base_backoff_seconds is 5

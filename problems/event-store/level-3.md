@@ -18,7 +18,7 @@ If a snapshot exists at or before the requested version, use it as the starting 
 - **This is an optimization that changes HOW state is computed, not WHAT state is returned.** All return values must be identical to replaying from scratch.
 - Snapshots store `{version: N, state: {...}}` where version is the position of the latest event at snapshot time
 - Multiple snapshots can exist per stream (at different versions)
-- `create_snapshot` on an empty stream should return `None`
+- `create_snapshot` on a non-existent stream (no events appended) returns `None`
 - Events appended after a snapshot exist but aren't included in it (that's the point, replay from snapshot forward)
 
 ## Examples

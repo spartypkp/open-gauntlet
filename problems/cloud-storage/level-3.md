@@ -16,7 +16,7 @@ Add a file owned by `user_id`. Return the user's **remaining capacity** (as an i
 ### `update_capacity(user_id, new_capacity)`
 Update a user's total storage capacity. Return the user's new remaining capacity as an integer. Return `None` if `user_id` doesn't exist.
 
-If the user's current storage usage exceeds `new_capacity`, files must be evicted to bring usage within the new limit. Eviction order: **largest file first**; ties broken by **lexicographically largest file name first** (descending alphabetical). Keep evicting until usage fits within `new_capacity`.
+If the user's current storage usage exceeds `new_capacity`, files must be evicted to bring usage within the new limit. Eviction order: **largest file first**; ties broken by **file name in reverse alphabetical order** (z before a). Keep evicting until usage fits within `new_capacity`.
 
 ## Important
 

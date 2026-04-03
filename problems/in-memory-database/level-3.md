@@ -35,7 +35,7 @@ Same as `scan_by_prefix` but respects TTL.
 db = InMemoryDatabase()
 db.set_at_with_ttl("A", "B", "val", timestamp=1, ttl=10)   # expires at t=11
 db.get_at("A", "B", timestamp=5)    # "val" (within TTL)
-db.get_at("A", "B", timestamp=11)   # "" (expired)
+db.get_at("A", "B", timestamp=11)   # None (expired)
 db.set_at("A", "C", "perm", timestamp=1)
 db.get_at("A", "C", timestamp=100)  # "perm" (never expires)
 ```

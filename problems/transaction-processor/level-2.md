@@ -7,7 +7,7 @@ Add a ranking operation to identify which accounts have sent the most money.
 ### `top_spenders(n)`
 Return the top `n` accounts ranked by total outgoing transfer volume (sum of all successful outbound `transfer` calls), in descending order.
 
-Return format: a list of strings, each in the format `"accountId(amount)"`.
+Return format: a list of strings, each in the format `"accountId(amount)"` where amount is formatted as an integer (no decimal point), e.g., `"alice(400)"` not `"alice(400.0)"`.
 
 Ties broken alphabetically by `account_id` (ascending).
 

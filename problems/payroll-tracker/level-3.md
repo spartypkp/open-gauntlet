@@ -5,7 +5,7 @@ Add promotions (which change a worker's compensation rate) and salary computatio
 ## New Operations
 
 ### `promote(worker_id, timestamp, position, compensation)`
-Promote a worker to a new position with a new hourly compensation rate. The new rate applies from `timestamp` forward.
+Promote a worker to a new position with a new hourly compensation rate. The new rate applies starting at exactly `timestamp` (inclusive). Time before `timestamp` uses the previous rate.
 
 Return `True` on success. Return `None` if the worker doesn't exist.
 

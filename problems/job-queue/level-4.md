@@ -10,7 +10,7 @@ Now accepts an optional visibility timeout in seconds. When set, the job becomes
 ## New Operations
 
 ### `check_timeouts(current_timestamp)`
-Check all running jobs with visibility timeouts. Any job whose timeout has expired (current_timestamp >= dequeue_time + visibility_timeout) is moved back to pending. Return a list of job_ids that were timed out.
+Check all running jobs with visibility timeouts. Any job whose timeout has expired (current_timestamp >= dequeue_time + visibility_timeout) is moved back to pending. Return a sorted list of job_ids that were timed out (alphabetical order).
 
 ### `extend_visibility(job_id, additional_seconds)`
 Extend the visibility timeout for a running job. Return `True` if extended. Return `False` if the job is not running or has no visibility timeout.
