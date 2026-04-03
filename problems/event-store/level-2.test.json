@@ -1,0 +1,321 @@
+{
+  "visible": [
+    {
+      "name": "Get state at specific version",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "append",
+          "s1",
+          "created",
+          {
+            "name": "Alice"
+          }
+        ],
+        [
+          "append",
+          "s1",
+          "updated",
+          {
+            "name": "Bob"
+          }
+        ],
+        [
+          "append",
+          "s1",
+          "updated",
+          {
+            "name": "Charlie"
+          }
+        ],
+        [
+          "get_state_at",
+          "s1",
+          1
+        ]
+      ],
+      "expected": [
+        null,
+        0,
+        1,
+        2,
+        {
+          "name": "Bob"
+        }
+      ]
+    },
+    {
+      "name": "Get events from position",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "append",
+          "s1",
+          "a",
+          {
+            "x": 1
+          }
+        ],
+        [
+          "append",
+          "s1",
+          "b",
+          {
+            "x": 2
+          }
+        ],
+        [
+          "append",
+          "s1",
+          "c",
+          {
+            "x": 3
+          }
+        ],
+        [
+          "get_events_from",
+          "s1",
+          2
+        ]
+      ],
+      "expected": [
+        null,
+        0,
+        1,
+        2,
+        [
+          {
+            "position": 2,
+            "event_type": "c",
+            "data": {
+              "x": 3
+            }
+          }
+        ]
+      ]
+    }
+  ],
+  "hidden": [
+    {
+      "name": "Get state at version 0",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "append",
+          "s1",
+          "init",
+          {
+            "val": 42
+          }
+        ],
+        [
+          "append",
+          "s1",
+          "update",
+          {
+            "val": 99
+          }
+        ],
+        [
+          "get_state_at",
+          "s1",
+          0
+        ]
+      ],
+      "expected": [
+        null,
+        0,
+        1,
+        {
+          "val": 42
+        }
+      ]
+    },
+    {
+      "name": "Get state at version beyond end",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "append",
+          "s1",
+          "a",
+          {
+            "k": "v"
+          }
+        ],
+        [
+          "get_state_at",
+          "s1",
+          100
+        ]
+      ],
+      "expected": [
+        null,
+        0,
+        {
+          "k": "v"
+        }
+      ]
+    },
+    {
+      "name": "Count events",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "append",
+          "s1",
+          "a",
+          {}
+        ],
+        [
+          "append",
+          "s1",
+          "b",
+          {}
+        ],
+        [
+          "count_events",
+          "s1"
+        ],
+        [
+          "count_events",
+          "ghost"
+        ],
+        [
+          "get_events",
+          "s1"
+        ],
+        [
+          "list_streams"
+        ],
+        [
+          "get_current_state",
+          "s1"
+        ]
+      ],
+      "expected": [
+        null,
+        0,
+        1,
+        2,
+        0,
+        [
+          {
+            "position": 0,
+            "event_type": "a",
+            "data": {}
+          },
+          {
+            "position": 1,
+            "event_type": "b",
+            "data": {}
+          }
+        ],
+        [
+          "s1"
+        ],
+        {}
+      ]
+    },
+    {
+      "name": "Get event by position",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "append",
+          "s1",
+          "created",
+          {
+            "name": "test"
+          }
+        ],
+        [
+          "get_event",
+          "s1",
+          0
+        ]
+      ],
+      "expected": [
+        null,
+        0,
+        {
+          "position": 0,
+          "event_type": "created",
+          "data": {
+            "name": "test"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get event out of range",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "append",
+          "s1",
+          "a",
+          {}
+        ],
+        [
+          "get_event",
+          "s1",
+          5
+        ]
+      ],
+      "expected": [
+        null,
+        0,
+        null
+      ]
+    },
+    {
+      "name": "Get events from non-existent stream",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "get_events_from",
+          "ghost",
+          0
+        ]
+      ],
+      "expected": [
+        null,
+        []
+      ]
+    },
+    {
+      "name": "Get state at for non-existent stream",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "get_state_at",
+          "ghost",
+          0
+        ]
+      ],
+      "expected": [
+        null,
+        {}
+      ]
+    }
+  ]
+}

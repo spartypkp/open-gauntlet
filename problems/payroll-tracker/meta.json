@@ -1,0 +1,18 @@
+{
+  "title": "Payroll Tracker",
+  "difficulty": "hard",
+  "tags": [
+    "design",
+    "intervals",
+    "state-management",
+    "payroll"
+  ],
+  "time_limit_minutes": 90,
+  "languages": [
+    "python"
+  ],
+  "class_name": "PayrollTracker",
+  "confirmed_at": [
+    "Ramp"
+  ]
+}

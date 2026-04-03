@@ -1,0 +1,269 @@
+{
+  "visible": [
+    {
+      "name": "TTL entry alive before expiry",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "set",
+          "a",
+          "fresh",
+          5,
+          10
+        ],
+        [
+          "get",
+          "a",
+          10
+        ]
+      ],
+      "expected": [
+        "",
+        "",
+        "fresh"
+      ]
+    },
+    {
+      "name": "TTL entry expired at boundary",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "set",
+          "a",
+          "fresh",
+          5,
+          10
+        ],
+        [
+          "get",
+          "a",
+          15
+        ]
+      ],
+      "expected": [
+        "",
+        "",
+        null
+      ]
+    }
+  ],
+  "hidden": [
+    {
+      "name": "TTL exclusive right boundary",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "set",
+          "k",
+          "v",
+          5,
+          10
+        ],
+        [
+          "get",
+          "k",
+          14
+        ],
+        [
+          "get",
+          "k",
+          15
+        ]
+      ],
+      "expected": [
+        "",
+        "",
+        "v",
+        null
+      ]
+    },
+    {
+      "name": "No TTL means never expires",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "set",
+          "a",
+          "forever",
+          1
+        ],
+        [
+          "get",
+          "a",
+          999999
+        ]
+      ],
+      "expected": [
+        "",
+        "",
+        "forever"
+      ]
+    },
+    {
+      "name": "Get falls through expired to earlier alive entry",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "set",
+          "a",
+          "old",
+          1
+        ],
+        [
+          "set",
+          "a",
+          "new",
+          5,
+          3
+        ],
+        [
+          "get",
+          "a",
+          9
+        ]
+      ],
+      "expected": [
+        "",
+        "",
+        "",
+        "old"
+      ]
+    },
+    {
+      "name": "Purge expired removes correct count",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "set",
+          "a",
+          1,
+          1,
+          5
+        ],
+        [
+          "set",
+          "b",
+          2,
+          2,
+          5
+        ],
+        [
+          "set",
+          "c",
+          3,
+          3
+        ],
+        [
+          "purge_expired",
+          10
+        ]
+      ],
+      "expected": [
+        "",
+        "",
+        "",
+        "",
+        "2"
+      ]
+    },
+    {
+      "name": "Purge expired with nothing to purge",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "set",
+          "a",
+          1,
+          1
+        ],
+        [
+          "purge_expired",
+          100
+        ]
+      ],
+      "expected": [
+        "",
+        "",
+        "0"
+      ]
+    },
+    {
+      "name": "Keys at respects TTL",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "set",
+          "a",
+          1,
+          1,
+          5
+        ],
+        [
+          "set",
+          "b",
+          2,
+          1
+        ],
+        [
+          "keys_at",
+          10
+        ]
+      ],
+      "expected": [
+        "",
+        "",
+        "",
+        "['b']"
+      ]
+    },
+    {
+      "name": "Get range respects TTL",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "set",
+          "a",
+          "alive",
+          5
+        ],
+        [
+          "set",
+          "a",
+          "dead",
+          8,
+          2
+        ],
+        [
+          "get_range",
+          "a",
+          1,
+          20
+        ]
+      ],
+      "expected": [
+        "",
+        "",
+        "",
+        "[[5, 'alive']]"
+      ]
+    }
+  ]
+}

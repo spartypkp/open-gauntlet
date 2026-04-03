@@ -1,0 +1,279 @@
+{
+  "visible": [
+    {
+      "name": "Add and retrieve file size",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "add_file",
+          "report.pdf",
+          500
+        ],
+        [
+          "get_file_size",
+          "report.pdf"
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        500
+      ]
+    },
+    {
+      "name": "Duplicate add returns false",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "add_file",
+          "notes.txt",
+          100
+        ],
+        [
+          "add_file",
+          "notes.txt",
+          200
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        false
+      ]
+    },
+    {
+      "name": "Copy file",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "add_file",
+          "source.txt",
+          300
+        ],
+        [
+          "copy_file",
+          "source.txt",
+          "dest.txt"
+        ],
+        [
+          "get_file_size",
+          "dest.txt"
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        true,
+        300
+      ]
+    }
+  ],
+  "hidden": [
+    {
+      "name": "Get size of non-existent file",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "get_file_size",
+          "missing.txt"
+        ]
+      ],
+      "expected": [
+        null,
+        null
+      ]
+    },
+    {
+      "name": "Copy non-existent source returns false",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "copy_file",
+          "ghost.txt",
+          "out.txt"
+        ]
+      ],
+      "expected": [
+        null,
+        false
+      ]
+    },
+    {
+      "name": "Copy overwrites existing destination",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "add_file",
+          "a.txt",
+          100
+        ],
+        [
+          "add_file",
+          "b.txt",
+          999
+        ],
+        [
+          "copy_file",
+          "a.txt",
+          "b.txt"
+        ],
+        [
+          "get_file_size",
+          "b.txt"
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        true,
+        true,
+        100
+      ]
+    },
+    {
+      "name": "Original file unaffected by copy",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "add_file",
+          "orig.txt",
+          400
+        ],
+        [
+          "copy_file",
+          "orig.txt",
+          "copy.txt"
+        ],
+        [
+          "get_file_size",
+          "orig.txt"
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        true,
+        400
+      ]
+    },
+    {
+      "name": "Multiple files independent",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "add_file",
+          "a.txt",
+          10
+        ],
+        [
+          "add_file",
+          "b.txt",
+          20
+        ],
+        [
+          "add_file",
+          "c.txt",
+          30
+        ],
+        [
+          "get_file_size",
+          "a.txt"
+        ],
+        [
+          "get_file_size",
+          "b.txt"
+        ],
+        [
+          "get_file_size",
+          "c.txt"
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        true,
+        true,
+        10,
+        20,
+        30
+      ]
+    },
+    {
+      "name": "Copy to self overwrites with same size",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "add_file",
+          "a.txt",
+          100
+        ],
+        [
+          "copy_file",
+          "a.txt",
+          "a.txt"
+        ],
+        [
+          "get_file_size",
+          "a.txt"
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        true,
+        100
+      ]
+    },
+    {
+      "name": "Delete then re-add same filename",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "add_file",
+          "temp.txt",
+          50
+        ],
+        [
+          "copy_file",
+          "temp.txt",
+          "backup.txt"
+        ],
+        [
+          "get_file_size",
+          "temp.txt"
+        ],
+        [
+          "get_file_size",
+          "backup.txt"
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        true,
+        50,
+        50
+      ]
+    }
+  ]
+}

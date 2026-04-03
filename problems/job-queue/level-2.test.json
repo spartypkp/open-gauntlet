@@ -1,0 +1,176 @@
+{
+  "visible": [
+    {
+      "name": "Priority ordering",
+      "operations": [
+        ["init"],
+        ["enqueue", "low", {}, 1],
+        ["enqueue", "high", {}, 10],
+        ["dequeue"]
+      ],
+      "expected": [
+        null,
+        true,
+        true,
+        "high"
+      ]
+    },
+    {
+      "name": "Peek without dequeuing",
+      "operations": [
+        ["init"],
+        ["enqueue", "a", {}, 1],
+        ["enqueue", "b", {}, 5],
+        ["peek", 2],
+        ["dequeue"]
+      ],
+      "expected": [
+        null,
+        true,
+        true,
+        ["b", "a"],
+        "b"
+      ]
+    },
+    {
+      "name": "Queue length and failed jobs",
+      "operations": [
+        ["init"],
+        ["enqueue", "a", {}],
+        ["enqueue", "b", {}],
+        ["queue_length"],
+        ["dequeue"],
+        ["fail", "a"],
+        ["get_failed_jobs"],
+        ["queue_length"]
+      ],
+      "expected": [
+        null,
+        true,
+        true,
+        2,
+        "a",
+        true,
+        ["a"],
+        1
+      ]
+    }
+  ],
+  "hidden": [
+    {
+      "name": "FIFO within same priority",
+      "operations": [
+        ["init"],
+        ["enqueue", "first", {}, 5],
+        ["enqueue", "second", {}, 5],
+        ["dequeue"],
+        ["dequeue"],
+        ["complete", "first"],
+        ["get_status", "first"],
+        ["complete", "second"],
+        ["get_status", "second"]
+      ],
+      "expected": [
+        null,
+        true,
+        true,
+        "first",
+        "second",
+        true,
+        "completed",
+        true,
+        "completed"
+      ]
+    },
+    {
+      "name": "Queue length",
+      "operations": [
+        ["init"],
+        ["enqueue", "a", {}],
+        ["enqueue", "b", {}],
+        ["dequeue"],
+        ["queue_length"]
+      ],
+      "expected": [
+        null,
+        true,
+        true,
+        "a",
+        1
+      ]
+    },
+    {
+      "name": "Get failed jobs",
+      "operations": [
+        ["init"],
+        ["enqueue", "b", {}],
+        ["enqueue", "a", {}],
+        ["dequeue"],
+        ["fail", "b"],
+        ["dequeue"],
+        ["fail", "a"],
+        ["get_failed_jobs"]
+      ],
+      "expected": [
+        null,
+        true,
+        true,
+        "b",
+        true,
+        "a",
+        true,
+        ["a", "b"]
+      ]
+    },
+    {
+      "name": "Peek more than available",
+      "operations": [
+        ["init"],
+        ["enqueue", "a", {}],
+        ["peek", 5]
+      ],
+      "expected": [
+        null,
+        true,
+        ["a"]
+      ]
+    },
+    {
+      "name": "Peek empty queue",
+      "operations": [
+        ["init"],
+        ["peek", 3]
+      ],
+      "expected": [
+        null,
+        []
+      ]
+    },
+    {
+      "name": "Queue length empty",
+      "operations": [
+        ["init"],
+        ["queue_length"]
+      ],
+      "expected": [
+        null,
+        0
+      ]
+    },
+    {
+      "name": "Default priority is 0",
+      "operations": [
+        ["init"],
+        ["enqueue", "default", {}],
+        ["enqueue", "high", {}, 1],
+        ["dequeue"]
+      ],
+      "expected": [
+        null,
+        true,
+        true,
+        "high"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "title": "Job Queue",
+  "difficulty": "medium",
+  "tags": [
+    "queue",
+    "retry-logic",
+    "design"
+  ],
+  "time_limit_minutes": 90,
+  "languages": [
+    "python"
+  ],
+  "class_name": "JobQueue"
+}

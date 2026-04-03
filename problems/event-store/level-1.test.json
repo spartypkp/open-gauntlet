@@ -1,0 +1,145 @@
+{
+  "visible": [
+    {
+      "name": "Append and get events",
+      "operations": [
+        ["init"],
+        ["append", "s1", "created", {"name": "Alice"}],
+        ["append", "s1", "updated", {"age": 30}],
+        ["get_events", "s1"]
+      ],
+      "expected": [
+        null,
+        0,
+        1,
+        [{"position": 0, "event_type": "created", "data": {"name": "Alice"}}, {"position": 1, "event_type": "updated", "data": {"age": 30}}]
+      ]
+    },
+    {
+      "name": "Get current state merges data",
+      "operations": [
+        ["init"],
+        ["append", "s1", "created", {"name": "Alice", "role": "user"}],
+        ["append", "s1", "updated", {"role": "admin"}],
+        ["get_current_state", "s1"]
+      ],
+      "expected": [
+        null,
+        0,
+        1,
+        {"name": "Alice", "role": "admin"}
+      ]
+    }
+  ],
+  "hidden": [
+    {
+      "name": "Non-existent stream returns empty",
+      "operations": [
+        ["init"],
+        ["get_events", "ghost"],
+        ["get_current_state", "ghost"]
+      ],
+      "expected": [
+        null,
+        [],
+        {}
+      ]
+    },
+    {
+      "name": "List streams sorted",
+      "operations": [
+        ["init"],
+        ["append", "c", "ev", {}],
+        ["append", "a", "ev", {}],
+        ["append", "b", "ev", {}],
+        ["list_streams"]
+      ],
+      "expected": [
+        null,
+        0,
+        0,
+        0,
+        ["a", "b", "c"]
+      ]
+    },
+    {
+      "name": "Multiple streams independent",
+      "operations": [
+        ["init"],
+        ["append", "s1", "ev", {"x": 1}],
+        ["append", "s2", "ev", {"y": 2}],
+        ["get_current_state", "s1"],
+        ["get_current_state", "s2"]
+      ],
+      "expected": [
+        null,
+        0,
+        0,
+        {"x": 1},
+        {"y": 2}
+      ]
+    },
+    {
+      "name": "Positions auto-increment per stream",
+      "operations": [
+        ["init"],
+        ["append", "s1", "a", {}],
+        ["append", "s1", "b", {}],
+        ["append", "s2", "c", {}],
+        ["append", "s1", "d", {}]
+      ],
+      "expected": [
+        null,
+        0,
+        1,
+        0,
+        2
+      ]
+    },
+    {
+      "name": "State with overwritten keys",
+      "operations": [
+        ["init"],
+        ["append", "s1", "set", {"val": 1}],
+        ["append", "s1", "set", {"val": 2}],
+        ["append", "s1", "set", {"val": 3}],
+        ["get_current_state", "s1"]
+      ],
+      "expected": [
+        null,
+        0,
+        1,
+        2,
+        {"val": 3}
+      ]
+    },
+    {
+      "name": "List streams with no streams",
+      "operations": [
+        ["init"],
+        ["list_streams"]
+      ],
+      "expected": [
+        null,
+        []
+      ]
+    },
+    {
+      "name": "State accumulates multiple keys",
+      "operations": [
+        ["init"],
+        ["append", "s1", "a", {"k1": "v1"}],
+        ["append", "s1", "b", {"k2": "v2"}],
+        ["append", "s1", "c", {"k3": "v3"}],
+        ["get_current_state", "s1"]
+      ],
+      "expected": [
+        null,
+        0,
+        1,
+        2,
+        {"k1": "v1", "k2": "v2", "k3": "v3"}
+      ]
+    }
+  ]
+}

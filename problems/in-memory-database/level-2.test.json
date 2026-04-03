@@ -1,0 +1,200 @@
+{
+  "visible": [
+    {
+      "name": "Scan returns fields sorted lexicographically",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "set",
+          "A",
+          "BC",
+          "E"
+        ],
+        [
+          "set",
+          "A",
+          "BD",
+          "F"
+        ],
+        [
+          "set",
+          "A",
+          "C",
+          "G"
+        ],
+        [
+          "scan",
+          "A"
+        ]
+      ],
+      "expected": [
+        null,
+        null,
+        null,
+        null,
+        "BC(E), BD(F), C(G)"
+      ]
+    },
+    {
+      "name": "scan_by_prefix filters fields",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "set",
+          "A",
+          "BC",
+          "E"
+        ],
+        [
+          "set",
+          "A",
+          "BD",
+          "F"
+        ],
+        [
+          "set",
+          "A",
+          "C",
+          "G"
+        ],
+        [
+          "scan_by_prefix",
+          "A",
+          "B"
+        ]
+      ],
+      "expected": [
+        null,
+        null,
+        null,
+        null,
+        "BC(E), BD(F)"
+      ]
+    }
+  ],
+  "hidden": [
+    {
+      "name": "Scan on non-existent key returns None",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "scan",
+          "A"
+        ]
+      ],
+      "expected": [
+        null,
+        ""
+      ]
+    },
+    {
+      "name": "scan_by_prefix with no matches returns None",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "set",
+          "A",
+          "B",
+          "val"
+        ],
+        [
+          "scan_by_prefix",
+          "A",
+          "X"
+        ]
+      ],
+      "expected": [
+        null,
+        null,
+        ""
+      ]
+    },
+    {
+      "name": "Scan reflects deletions",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "set",
+          "A",
+          "B",
+          "1"
+        ],
+        [
+          "set",
+          "A",
+          "C",
+          "2"
+        ],
+        [
+          "delete",
+          "A",
+          "B"
+        ],
+        [
+          "scan",
+          "A"
+        ],
+        [
+          "get",
+          "A",
+          "C"
+        ],
+        [
+          "get",
+          "A",
+          "B"
+        ]
+      ],
+      "expected": [
+        null,
+        null,
+        null,
+        true,
+        "C(2)",
+        "2",
+        null
+      ]
+    },
+    {
+      "name": "scan_by_prefix with empty prefix returns all fields",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "set",
+          "A",
+          "B",
+          "1"
+        ],
+        [
+          "set",
+          "A",
+          "C",
+          "2"
+        ],
+        [
+          "scan_by_prefix",
+          "A",
+          ""
+        ]
+      ],
+      "expected": [
+        null,
+        null,
+        null,
+        "B(1), C(2)"
+      ]
+    }
+  ]
+}

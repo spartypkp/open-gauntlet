@@ -1,0 +1,474 @@
+{
+  "visible": [
+    {
+      "name": "Cross-stream aggregate",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "append",
+          "s1",
+          "ev",
+          {
+            "a": 1
+          }
+        ],
+        [
+          "append",
+          "s2",
+          "ev",
+          {
+            "b": 2
+          }
+        ],
+        [
+          "create_aggregate",
+          "agg",
+          [
+            "s1",
+            "s2"
+          ]
+        ],
+        [
+          "get_aggregate",
+          "agg"
+        ]
+      ],
+      "expected": [
+        null,
+        0,
+        0,
+        true,
+        {
+          "a": 1,
+          "b": 2
+        }
+      ]
+    },
+    {
+      "name": "Replay events from position",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "append",
+          "s1",
+          "created",
+          {
+            "id": 1
+          }
+        ],
+        [
+          "append",
+          "s1",
+          "updated",
+          {
+            "id": 1,
+            "name": "test"
+          }
+        ],
+        [
+          "append",
+          "s1",
+          "deleted",
+          {
+            "id": 1
+          }
+        ],
+        [
+          "replay_from",
+          "s1",
+          1
+        ]
+      ],
+      "expected": [
+        null,
+        0,
+        1,
+        2,
+        [
+          {
+            "position": 1,
+            "event_type": "updated",
+            "data": {
+              "id": 1,
+              "name": "test"
+            }
+          },
+          {
+            "position": 2,
+            "event_type": "deleted",
+            "data": {
+              "id": 1
+            }
+          }
+        ]
+      ]
+    }
+  ],
+  "hidden": [
+    {
+      "name": "Aggregate merge order alphabetical",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "append",
+          "b-stream",
+          "ev",
+          {
+            "val": "from-b"
+          }
+        ],
+        [
+          "append",
+          "a-stream",
+          "ev",
+          {
+            "val": "from-a"
+          }
+        ],
+        [
+          "create_aggregate",
+          "agg",
+          [
+            "a-stream",
+            "b-stream"
+          ]
+        ],
+        [
+          "get_aggregate",
+          "agg"
+        ]
+      ],
+      "expected": [
+        null,
+        0,
+        0,
+        true,
+        {
+          "val": "from-b"
+        }
+      ]
+    },
+    {
+      "name": "Aggregate not found",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "get_aggregate",
+          "ghost"
+        ]
+      ],
+      "expected": [
+        null,
+        null
+      ]
+    },
+    {
+      "name": "Aggregate with non-existent stream",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "append",
+          "s1",
+          "ev",
+          {
+            "x": 1
+          }
+        ],
+        [
+          "create_aggregate",
+          "agg",
+          [
+            "s1",
+            "s2"
+          ]
+        ],
+        [
+          "get_aggregate",
+          "agg"
+        ]
+      ],
+      "expected": [
+        null,
+        0,
+        true,
+        {
+          "x": 1
+        }
+      ]
+    },
+    {
+      "name": "Get event count by type across streams",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "append",
+          "s1",
+          "created",
+          {}
+        ],
+        [
+          "append",
+          "s2",
+          "created",
+          {}
+        ],
+        [
+          "append",
+          "s1",
+          "updated",
+          {}
+        ],
+        [
+          "get_event_count_by_type",
+          "created"
+        ],
+        [
+          "get_event_count_by_type",
+          "updated"
+        ],
+        [
+          "get_event_count_by_type",
+          "deleted"
+        ]
+      ],
+      "expected": [
+        null,
+        0,
+        0,
+        1,
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "name": "Replay from position",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "append",
+          "s1",
+          "a",
+          {
+            "x": 1
+          }
+        ],
+        [
+          "append",
+          "s1",
+          "b",
+          {
+            "x": 2
+          }
+        ],
+        [
+          "append",
+          "s1",
+          "c",
+          {
+            "x": 3
+          }
+        ],
+        [
+          "replay_from",
+          "s1",
+          1
+        ]
+      ],
+      "expected": [
+        null,
+        0,
+        1,
+        2,
+        [
+          {
+            "position": 1,
+            "event_type": "b",
+            "data": {
+              "x": 2
+            }
+          },
+          {
+            "position": 2,
+            "event_type": "c",
+            "data": {
+              "x": 3
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "name": "Replay from non-existent stream",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "replay_from",
+          "ghost",
+          0
+        ]
+      ],
+      "expected": [
+        null,
+        null
+      ]
+    },
+    {
+      "name": "Duplicate aggregate name",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "create_aggregate",
+          "agg",
+          [
+            "s1"
+          ]
+        ],
+        [
+          "create_aggregate",
+          "agg",
+          [
+            "s2"
+          ]
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        false
+      ]
+    },
+    {
+      "name": "Aggregate reflects latest state",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "append",
+          "s1",
+          "ev",
+          {
+            "v": 1
+          }
+        ],
+        [
+          "create_aggregate",
+          "agg",
+          [
+            "s1"
+          ]
+        ],
+        [
+          "append",
+          "s1",
+          "ev",
+          {
+            "v": 2
+          }
+        ],
+        [
+          "get_aggregate",
+          "agg"
+        ],
+        [
+          "get_events",
+          "s1"
+        ],
+        [
+          "list_streams"
+        ],
+        [
+          "get_state_at",
+          "s1",
+          0
+        ],
+        [
+          "count_events",
+          "s1"
+        ],
+        [
+          "get_event",
+          "s1",
+          1
+        ],
+        [
+          "get_events_from",
+          "s1",
+          1
+        ],
+        [
+          "create_snapshot",
+          "s1"
+        ]
+      ],
+      "expected": [
+        null,
+        0,
+        true,
+        1,
+        {
+          "v": 2
+        },
+        [
+          {
+            "position": 0,
+            "event_type": "ev",
+            "data": {
+              "v": 1
+            }
+          },
+          {
+            "position": 1,
+            "event_type": "ev",
+            "data": {
+              "v": 2
+            }
+          }
+        ],
+        [
+          "s1"
+        ],
+        {
+          "v": 1
+        },
+        2,
+        {
+          "position": 1,
+          "event_type": "ev",
+          "data": {
+            "v": 2
+          }
+        },
+        [
+          {
+            "position": 1,
+            "event_type": "ev",
+            "data": {
+              "v": 2
+            }
+          }
+        ],
+        1
+      ]
+    }
+  ]
+}

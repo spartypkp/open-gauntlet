@@ -1,0 +1,339 @@
+{
+  "visible": [
+    {
+      "name": "Add user and file, returns remaining capacity",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "add_user",
+          "alice",
+          1000
+        ],
+        [
+          "add_file_by",
+          "alice",
+          "data.csv",
+          400
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        600
+      ]
+    },
+    {
+      "name": "Add file exceeding capacity returns None",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "add_user",
+          "alice",
+          500
+        ],
+        [
+          "add_file_by",
+          "alice",
+          "big.bin",
+          600
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        null
+      ]
+    },
+    {
+      "name": "Update capacity with eviction",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "add_user",
+          "carol",
+          300
+        ],
+        [
+          "add_file_by",
+          "carol",
+          "a.txt",
+          150
+        ],
+        [
+          "add_file_by",
+          "carol",
+          "b.txt",
+          100
+        ],
+        [
+          "update_capacity",
+          "carol",
+          120
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        150,
+        50,
+        20
+      ]
+    }
+  ],
+  "hidden": [
+    {
+      "name": "Duplicate user returns false",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "add_user",
+          "alice",
+          500
+        ],
+        [
+          "add_user",
+          "alice",
+          1000
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        false
+      ]
+    },
+    {
+      "name": "Add file for non-existent user returns None",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "add_file_by",
+          "ghost",
+          "file.txt",
+          100
+        ]
+      ],
+      "expected": [
+        null,
+        null
+      ]
+    },
+    {
+      "name": "File name collision with global file",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "add_file",
+          "shared.txt",
+          50
+        ],
+        [
+          "add_user",
+          "alice",
+          500
+        ],
+        [
+          "add_file_by",
+          "alice",
+          "shared.txt",
+          100
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        true,
+        null
+      ]
+    },
+    {
+      "name": "Multiple users independent capacity",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "add_user",
+          "alice",
+          500
+        ],
+        [
+          "add_user",
+          "bob",
+          300
+        ],
+        [
+          "add_file_by",
+          "alice",
+          "a.txt",
+          400
+        ],
+        [
+          "add_file_by",
+          "bob",
+          "b.txt",
+          200
+        ],
+        [
+          "add_file",
+          "global.txt",
+          50
+        ],
+        [
+          "copy_file",
+          "global.txt",
+          "backup.txt"
+        ],
+        [
+          "get_file_size",
+          "backup.txt"
+        ],
+        [
+          "find_file",
+          "",
+          ".txt"
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        true,
+        100,
+        100,
+        true,
+        true,
+        50,
+        [
+          "a.txt",
+          "b.txt",
+          "backup.txt",
+          "global.txt"
+        ]
+      ]
+    },
+    {
+      "name": "Update capacity non-existent user",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "update_capacity",
+          "ghost",
+          1000
+        ]
+      ],
+      "expected": [
+        null,
+        null
+      ]
+    },
+    {
+      "name": "Eviction removes largest file first, ties broken by lex-desc name",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "add_user",
+          "alice",
+          1000
+        ],
+        [
+          "add_file_by",
+          "alice",
+          "z.txt",
+          300
+        ],
+        [
+          "add_file_by",
+          "alice",
+          "a.txt",
+          300
+        ],
+        [
+          "add_file_by",
+          "alice",
+          "m.txt",
+          200
+        ],
+        [
+          "update_capacity",
+          "alice",
+          400
+        ],
+        [
+          "get_file_size",
+          "z.txt"
+        ],
+        [
+          "get_file_size",
+          "a.txt"
+        ],
+        [
+          "get_file_size",
+          "m.txt"
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        700,
+        400,
+        200,
+        200,
+        null,
+        null,
+        200
+      ]
+    },
+    {
+      "name": "Evicted files are not findable",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "add_user",
+          "alice",
+          300
+        ],
+        [
+          "add_file_by",
+          "alice",
+          "big.txt",
+          300
+        ],
+        [
+          "update_capacity",
+          "alice",
+          100
+        ],
+        [
+          "find_file",
+          "",
+          ".txt"
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        0,
+        100,
+        []
+      ]
+    }
+  ]
+}

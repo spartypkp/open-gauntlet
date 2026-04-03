@@ -1,0 +1,95 @@
+{
+  "visible": [
+    {
+      "name": "Basic top spenders ranking",
+      "operations": [
+        ["init"],
+        ["create_account", "alice", 1000],
+        ["create_account", "bob", 1000],
+        ["transfer", "alice", "bob", 300],
+        ["transfer", "bob", "alice", 100],
+        ["top_spenders", 2]
+      ],
+      "expected": [null, true, true, true, true, ["alice(300)", "bob(100)"]]
+    },
+    {
+      "name": "top_spenders with n=1 returns highest only",
+      "operations": [
+        ["init"],
+        ["create_account", "alice", 1000],
+        ["create_account", "bob", 500],
+        ["create_account", "carol", 200],
+        ["transfer", "alice", "bob", 300],
+        ["transfer", "alice", "carol", 100],
+        ["transfer", "bob", "carol", 200],
+        ["top_spenders", 1]
+      ],
+      "expected": [null, true, true, true, true, true, true, ["alice(400)"]]
+    }
+  ],
+  "hidden": [
+    {
+      "name": "Ties broken alphabetically",
+      "operations": [
+        ["init"],
+        ["create_account", "bob", 1000],
+        ["create_account", "alice", 1000],
+        ["transfer", "alice", "bob", 200],
+        ["transfer", "bob", "alice", 200],
+        ["top_spenders", 2],
+        ["get_balance", "alice"],
+        ["get_balance", "bob"]
+      ],
+      "expected": [null, true, true, true, true, ["alice(200)", "bob(200)"], 1000.0, 1000.0]
+    },
+    {
+      "name": "n greater than number of accounts returns all",
+      "operations": [
+        ["init"],
+        ["create_account", "alice", 500],
+        ["create_account", "bob", 500],
+        ["transfer", "alice", "bob", 100],
+        ["top_spenders", 10]
+      ],
+      "expected": [null, true, true, true, ["alice(100)", "bob(0)"]]
+    },
+    {
+      "name": "Multiple transfers accumulate for same account",
+      "operations": [
+        ["init"],
+        ["create_account", "alice", 1000],
+        ["create_account", "bob", 1000],
+        ["create_account", "carol", 0],
+        ["transfer", "alice", "carol", 100],
+        ["transfer", "alice", "carol", 150],
+        ["transfer", "bob", "carol", 300],
+        ["top_spenders", 2]
+      ],
+      "expected": [null, true, true, true, true, true, true, ["bob(300)", "alice(250)"]]
+    },
+    {
+      "name": "Failed transfers not counted",
+      "operations": [
+        ["init"],
+        ["create_account", "alice", 50],
+        ["create_account", "bob", 1000],
+        ["transfer", "alice", "bob", 200],
+        ["transfer", "bob", "alice", 400],
+        ["top_spenders", 2]
+      ],
+      "expected": [null, true, true, false, true, ["bob(400)", "alice(0)"]]
+    },
+    {
+      "name": "Accounts with zero spending appear last",
+      "operations": [
+        ["init"],
+        ["create_account", "alice", 500],
+        ["create_account", "bob", 500],
+        ["create_account", "carol", 0],
+        ["transfer", "alice", "carol", 200],
+        ["top_spenders", 3]
+      ],
+      "expected": [null, true, true, true, true, ["alice(200)", "bob(0)", "carol(0)"]]
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "title": "In-Memory Database",
+  "difficulty": "hard",
+  "tags": [
+    "design",
+    "database",
+    "ttl",
+    "state-management"
+  ],
+  "time_limit_minutes": 90,
+  "languages": [
+    "python"
+  ],
+  "class_name": "InMemoryDatabase",
+  "confirmed_at": [
+    "Anthropic",
+    "Ramp",
+    "eBay"
+  ]
+}

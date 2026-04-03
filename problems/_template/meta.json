@@ -1,0 +1,15 @@
+{
+  "title": "Temporal Key-Value Store",
+  "difficulty": "medium",
+  "tags": [
+    "data-structures",
+    "time-based",
+    "design"
+  ],
+  "time_limit_minutes": 90,
+  "languages": [
+    "python",
+    "javascript"
+  ],
+  "class_name": "TemporalKVStore"
+}

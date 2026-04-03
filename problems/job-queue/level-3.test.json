@@ -1,0 +1,205 @@
+{
+  "visible": [
+    {
+      "name": "Fail triggers retry",
+      "operations": [
+        ["init"],
+        ["enqueue", "a", {}],
+        ["dequeue"],
+        ["fail", "a"],
+        ["get_status", "a"],
+        ["process_retries", 5],
+        ["dequeue"]
+      ],
+      "expected": [
+        null,
+        true,
+        "a",
+        true,
+        "retrying",
+        ["a"],
+        "a"
+      ]
+    },
+    {
+      "name": "Get dead letter queue",
+      "operations": [
+        ["init"],
+        ["configure", 1, 5],
+        ["enqueue", "a", {}],
+        ["dequeue"],
+        ["fail", "a"],
+        ["get_dead_letter"]
+      ],
+      "expected": [
+        null,
+        null,
+        true,
+        "a",
+        true,
+        [["a", 1]]
+      ]
+    }
+  ],
+  "hidden": [
+    {
+      "name": "Dead letter after max attempts",
+      "operations": [
+        ["init"],
+        ["configure", 1, 5],
+        ["enqueue", "a", {}],
+        ["dequeue"],
+        ["fail", "a"],
+        ["get_status", "a"],
+        ["get_dead_letter"],
+        ["peek", 1],
+        ["queue_length"]
+      ],
+      "expected": [
+        null,
+        null,
+        true,
+        "a",
+        true,
+        "dead_letter",
+        [["a", 1]],
+        [],
+        0
+      ]
+    },
+    {
+      "name": "Process retries before time returns empty",
+      "operations": [
+        ["init"],
+        ["configure", 3, 10],
+        ["enqueue", "a", {}],
+        ["dequeue"],
+        ["fail", "a"],
+        ["process_retries", 5]
+      ],
+      "expected": [
+        null,
+        null,
+        true,
+        "a",
+        true,
+        []
+      ]
+    },
+    {
+      "name": "Retrying job not returned by dequeue",
+      "operations": [
+        ["init"],
+        ["enqueue", "a", {}, 5],
+        ["enqueue", "b", {}, 1],
+        ["dequeue"],
+        ["fail", "a"],
+        ["dequeue"]
+      ],
+      "expected": [
+        null,
+        true,
+        true,
+        "a",
+        true,
+        "b"
+      ]
+    },
+    {
+      "name": "Exponential backoff timing",
+      "operations": [
+        ["init"],
+        ["configure", 3, 10],
+        ["enqueue", "a", {}],
+        ["dequeue"],
+        ["fail", "a"],
+        ["process_retries", 10],
+        ["dequeue"],
+        ["fail", "a"],
+        ["process_retries", 20],
+        ["process_retries", 30]
+      ],
+      "expected": [
+        null,
+        null,
+        true,
+        "a",
+        true,
+        ["a"],
+        "a",
+        true,
+        [],
+        ["a"]
+      ]
+    },
+    {
+      "name": "Multiple dead letter jobs sorted",
+      "operations": [
+        ["init"],
+        ["configure", 1, 1],
+        ["enqueue", "b", {}],
+        ["enqueue", "a", {}],
+        ["dequeue"],
+        ["fail", "b"],
+        ["dequeue"],
+        ["fail", "a"],
+        ["get_dead_letter"]
+      ],
+      "expected": [
+        null,
+        null,
+        true,
+        true,
+        "b",
+        true,
+        "a",
+        true,
+        [["a", 1], ["b", 1]]
+      ]
+    },
+    {
+      "name": "Multiple retries at same time all returned",
+      "operations": [
+        ["init"],
+        ["configure", 3, 5],
+        ["enqueue", "a", {}],
+        ["enqueue", "b", {}],
+        ["dequeue"],
+        ["dequeue"],
+        ["fail", "a"],
+        ["fail", "b"],
+        ["process_retries", 5]
+      ],
+      "expected": [
+        null,
+        null,
+        true,
+        true,
+        "a",
+        "b",
+        true,
+        true,
+        ["a", "b"]
+      ]
+    },
+    {
+      "name": "Queue length excludes retrying jobs",
+      "operations": [
+        ["init"],
+        ["enqueue", "a", {}],
+        ["enqueue", "b", {}],
+        ["dequeue"],
+        ["fail", "a"],
+        ["queue_length"]
+      ],
+      "expected": [
+        null,
+        true,
+        true,
+        "a",
+        true,
+        1
+      ]
+    }
+  ]
+}

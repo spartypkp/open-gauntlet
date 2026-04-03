@@ -1,0 +1,134 @@
+{
+  "visible": [
+    {
+      "name": "Payment fires lazily on next operation",
+      "operations": [
+        ["init"],
+        ["create_account", "alice", 1000],
+        ["create_account", "bob", 0],
+        ["schedule_payment", "alice", "bob", 200, 10],
+        ["deposit", "alice", 50, 12],
+        ["get_balance", "alice"],
+        ["get_balance", "bob"]
+      ],
+      "expected": [null, true, true, "payment_0", 850.0, 850.0, 200.0]
+    },
+    {
+      "name": "Cancel payment prevents firing",
+      "operations": [
+        ["init"],
+        ["create_account", "alice", 1000],
+        ["create_account", "bob", 0],
+        ["schedule_payment", "alice", "bob", 500, 10],
+        ["cancel_payment", "payment_0"],
+        ["deposit", "alice", 0, 15],
+        ["get_balance", "alice"]
+      ],
+      "expected": [null, true, true, "payment_0", true, 1000.0, 1000.0]
+    }
+  ],
+  "hidden": [
+    {
+      "name": "Payment not yet due does not fire",
+      "operations": [
+        ["init"],
+        ["create_account", "alice", 1000],
+        ["create_account", "bob", 0],
+        ["schedule_payment", "alice", "bob", 200, 20],
+        ["deposit", "alice", 50, 10],
+        ["get_balance", "alice"],
+        ["get_balance", "bob"]
+      ],
+      "expected": [null, true, true, "payment_0", 1050.0, 1050.0, 0.0]
+    },
+    {
+      "name": "Multiple payments fire in chronological order",
+      "operations": [
+        ["init"],
+        ["create_account", "alice", 1000],
+        ["create_account", "bob", 0],
+        ["create_account", "carol", 0],
+        ["schedule_payment", "alice", "carol", 300, 15],
+        ["schedule_payment", "alice", "bob", 200, 10],
+        ["deposit", "alice", 0, 20],
+        ["get_balance", "alice"],
+        ["get_balance", "bob"],
+        ["get_balance", "carol"]
+      ],
+      "expected": [null, true, true, true, "payment_0", "payment_1", 500.0, 500.0, 200.0, 300.0]
+    },
+    {
+      "name": "Insufficient funds payment is skipped",
+      "operations": [
+        ["init"],
+        ["create_account", "alice", 50],
+        ["create_account", "bob", 0],
+        ["schedule_payment", "alice", "bob", 200, 10],
+        ["deposit", "alice", 0, 15],
+        ["get_balance", "alice"],
+        ["get_balance", "bob"]
+      ],
+      "expected": [null, true, true, "payment_0", 50.0, 50.0, 0.0]
+    },
+    {
+      "name": "Insufficient funds skipped but later same-timestamp payment still fires",
+      "operations": [
+        ["init"],
+        ["create_account", "charlie", 50],
+        ["create_account", "dave", 0],
+        ["schedule_payment", "charlie", "dave", 200, 10],
+        ["schedule_payment", "charlie", "dave", 30, 10],
+        ["deposit", "charlie", 0, 15],
+        ["get_balance", "charlie"],
+        ["get_balance", "dave"]
+      ],
+      "expected": [null, true, true, "payment_0", "payment_1", 20.0, 20.0, 30.0]
+    },
+    {
+      "name": "Cancel non-existent payment",
+      "operations": [
+        ["init"],
+        ["cancel_payment", "fake_id"]
+      ],
+      "expected": [null, false]
+    },
+    {
+      "name": "Cancel already-executed payment returns not found",
+      "operations": [
+        ["init"],
+        ["create_account", "alice", 1000],
+        ["create_account", "bob", 0],
+        ["schedule_payment", "alice", "bob", 100, 5],
+        ["deposit", "alice", 0, 10],
+        ["cancel_payment", "payment_0"]
+      ],
+      "expected": [null, true, true, "payment_0", 900.0, false]
+    },
+    {
+      "name": "Schedule payment to non-existent account",
+      "operations": [
+        ["init"],
+        ["create_account", "alice", 100],
+        ["schedule_payment", "alice", "ghost", 50, 10]
+      ],
+      "expected": [null, true, null]
+    },
+    {
+      "name": "Transfer triggers lazy payment processing",
+      "operations": [
+        ["init"],
+        ["create_account", "alice", 1000],
+        ["create_account", "bob", 0],
+        ["create_account", "carol", 200],
+        ["schedule_payment", "alice", "bob", 300, 5],
+        ["transfer", "carol", "alice", 100, 10],
+        ["get_balance", "alice"],
+        ["get_balance", "bob"],
+        ["get_balance", "carol"],
+        ["deposit", "bob", 50, 15],
+        ["get_balance", "bob"]
+      ],
+      "expected": [null, true, true, true, "payment_0", true, 800.0, 300.0, 100.0, 350.0, 350.0]
+    }
+  ]
+}

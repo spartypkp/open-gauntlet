@@ -1,0 +1,124 @@
+{
+  "visible": [
+    {
+      "name": "Create account and check balance",
+      "operations": [
+        ["init"],
+        ["create_account", "alice", 100],
+        ["get_balance", "alice"]
+      ],
+      "expected": [null, true, 100.0]
+    },
+    {
+      "name": "Deposit updates balance",
+      "operations": [
+        ["init"],
+        ["create_account", "alice", 100],
+        ["deposit", "alice", 50],
+        ["get_balance", "alice"]
+      ],
+      "expected": [null, true, 150.0, 150.0]
+    }
+  ],
+  "hidden": [
+    {
+      "name": "Transfer between accounts",
+      "operations": [
+        ["init"],
+        ["create_account", "alice", 500],
+        ["create_account", "bob", 100],
+        ["transfer", "alice", "bob", 200],
+        ["get_balance", "alice"],
+        ["get_balance", "bob"]
+      ],
+      "expected": [null, true, true, true, 300.0, 300.0]
+    },
+    {
+      "name": "Transfer exact balance succeeds",
+      "operations": [
+        ["init"],
+        ["create_account", "alice", 100],
+        ["create_account", "bob", 0],
+        ["transfer", "alice", "bob", 100],
+        ["get_balance", "alice"],
+        ["get_balance", "bob"]
+      ],
+      "expected": [null, true, true, true, 0.0, 100.0]
+    },
+    {
+      "name": "Transfer insufficient funds",
+      "operations": [
+        ["init"],
+        ["create_account", "alice", 50],
+        ["create_account", "bob", 100],
+        ["transfer", "alice", "bob", 200],
+        ["get_balance", "alice"],
+        ["get_balance", "bob"]
+      ],
+      "expected": [null, true, true, false, 50.0, 100.0]
+    },
+    {
+      "name": "Transfer to non-existent account",
+      "operations": [
+        ["init"],
+        ["create_account", "alice", 100],
+        ["transfer", "alice", "ghost", 50]
+      ],
+      "expected": [null, true, null]
+    },
+    {
+      "name": "Transfer from non-existent account",
+      "operations": [
+        ["init"],
+        ["create_account", "bob", 100],
+        ["transfer", "ghost", "bob", 50]
+      ],
+      "expected": [null, true, null]
+    },
+    {
+      "name": "Duplicate account creation",
+      "operations": [
+        ["init"],
+        ["create_account", "alice", 100],
+        ["create_account", "alice", 200]
+      ],
+      "expected": [null, true, false]
+    },
+    {
+      "name": "Get balance of non-existent account",
+      "operations": [
+        ["init"],
+        ["get_balance", "ghost"]
+      ],
+      "expected": [null, null]
+    },
+    {
+      "name": "Deposit to non-existent account",
+      "operations": [
+        ["init"],
+        ["deposit", "ghost", 100]
+      ],
+      "expected": [null, null]
+    },
+    {
+      "name": "Create account with default zero balance",
+      "operations": [
+        ["init"],
+        ["create_account", "bob"],
+        ["get_balance", "bob"]
+      ],
+      "expected": [null, true, 0.0]
+    },
+    {
+      "name": "Multiple accounts are independent",
+      "operations": [
+        ["init"],
+        ["create_account", "alice", 100],
+        ["create_account", "bob", 200],
+        ["deposit", "alice", 50],
+        ["get_balance", "bob"]
+      ],
+      "expected": [null, true, true, 150.0, 200.0]
+    }
+  ]
+}

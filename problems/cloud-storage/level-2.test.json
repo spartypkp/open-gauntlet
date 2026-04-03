@@ -1,0 +1,109 @@
+{
+  "visible": [
+    {
+      "name": "Find by prefix",
+      "operations": [
+        ["init"],
+        ["add_file", "report_2024.pdf", 500],
+        ["add_file", "report_2025.pdf", 300],
+        ["add_file", "notes.txt", 100],
+        ["find_file", "report", ""]
+      ],
+      "expected": [null, true, true, true, ["report_2024.pdf", "report_2025.pdf"]]
+    },
+    {
+      "name": "Find by suffix",
+      "operations": [
+        ["init"],
+        ["add_file", "readme.txt", 200],
+        ["add_file", "notes.txt", 100],
+        ["add_file", "archive.zip", 400],
+        ["find_file", "", ".txt"]
+      ],
+      "expected": [null, true, true, true, ["readme.txt", "notes.txt"]]
+    },
+    {
+      "name": "Find by prefix and suffix",
+      "operations": [
+        ["init"],
+        ["add_file", "log_error.txt", 300],
+        ["add_file", "log_info.txt", 100],
+        ["add_file", "log_error.csv", 200],
+        ["find_file", "log", ".txt"]
+      ],
+      "expected": [null, true, true, true, ["log_error.txt", "log_info.txt"]]
+    }
+  ],
+  "hidden": [
+    {
+      "name": "No matches returns empty list",
+      "operations": [
+        ["init"],
+        ["add_file", "notes.txt", 100],
+        ["find_file", "xyz", ""]
+      ],
+      "expected": [null, true, []]
+    },
+    {
+      "name": "Results sorted by size descending then name ascending",
+      "operations": [
+        ["init"],
+        ["add_file", "b.txt", 200],
+        ["add_file", "a.txt", 200],
+        ["add_file", "c.txt", 300],
+        ["find_file", "", ".txt"]
+      ],
+      "expected": [null, true, true, true, ["c.txt", "a.txt", "b.txt"]]
+    },
+    {
+      "name": "Empty prefix and suffix matches all files",
+      "operations": [
+        ["init"],
+        ["add_file", "alpha.txt", 50],
+        ["add_file", "beta.log", 200],
+        ["find_file", "", ""]
+      ],
+      "expected": [null, true, true, ["beta.log", "alpha.txt"]]
+    },
+    {
+      "name": "Find returns at most 10 results",
+      "operations": [
+        ["init"],
+        ["add_file", "f01.txt", 100],
+        ["add_file", "f02.txt", 200],
+        ["add_file", "f03.txt", 300],
+        ["add_file", "f04.txt", 400],
+        ["add_file", "f05.txt", 500],
+        ["add_file", "f06.txt", 600],
+        ["add_file", "f07.txt", 700],
+        ["add_file", "f08.txt", 800],
+        ["add_file", "f09.txt", 900],
+        ["add_file", "f10.txt", 1000],
+        ["add_file", "f11.txt", 1100],
+        ["find_file", "f", ".txt"]
+      ],
+      "expected": [null, true, true, true, true, true, true, true, true, true, true, true, ["f11.txt", "f10.txt", "f09.txt", "f08.txt", "f07.txt", "f06.txt", "f05.txt", "f04.txt", "f03.txt", "f02.txt"]]
+    },
+    {
+      "name": "Copied file is searchable",
+      "operations": [
+        ["init"],
+        ["add_file", "source.log", 500],
+        ["copy_file", "source.log", "backup.log"],
+        ["find_file", "", ".log"]
+      ],
+      "expected": [null, true, true, ["backup.log", "source.log"]]
+    },
+    {
+      "name": "Find with empty prefix and suffix returns all files by size",
+      "operations": [
+        ["init"],
+        ["add_file", "small.txt", 10],
+        ["add_file", "big.dat", 500],
+        ["add_file", "medium.log", 100],
+        ["find_file", "", ""]
+      ],
+      "expected": [null, true, true, true, ["big.dat", "medium.log", "small.txt"]]
+    }
+  ]
+}

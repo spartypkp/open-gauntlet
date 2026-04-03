@@ -1,0 +1,419 @@
+{
+  "visible": [
+    {
+      "name": "Snapshot speeds up state computation",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "append",
+          "s1",
+          "init",
+          {
+            "a": 1
+          }
+        ],
+        [
+          "append",
+          "s1",
+          "update",
+          {
+            "b": 2
+          }
+        ],
+        [
+          "create_snapshot",
+          "s1"
+        ],
+        [
+          "append",
+          "s1",
+          "update",
+          {
+            "c": 3
+          }
+        ],
+        [
+          "get_current_state",
+          "s1"
+        ]
+      ],
+      "expected": [
+        null,
+        0,
+        1,
+        1,
+        2,
+        {
+          "a": 1,
+          "b": 2,
+          "c": 3
+        }
+      ]
+    },
+    {
+      "name": "Create snapshot returns version",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "append",
+          "s1",
+          "ev",
+          {
+            "x": 1
+          }
+        ],
+        [
+          "append",
+          "s1",
+          "ev",
+          {
+            "y": 2
+          }
+        ],
+        [
+          "append",
+          "s1",
+          "ev",
+          {
+            "z": 3
+          }
+        ],
+        [
+          "create_snapshot",
+          "s1"
+        ]
+      ],
+      "expected": [
+        null,
+        0,
+        1,
+        2,
+        2
+      ]
+    }
+  ],
+  "hidden": [
+    {
+      "name": "Snapshot on non-existent stream",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "create_snapshot",
+          "ghost"
+        ]
+      ],
+      "expected": [
+        null,
+        null
+      ]
+    },
+    {
+      "name": "Get state at uses snapshot",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "append",
+          "s1",
+          "a",
+          {
+            "v": 1
+          }
+        ],
+        [
+          "append",
+          "s1",
+          "b",
+          {
+            "v": 2
+          }
+        ],
+        [
+          "create_snapshot",
+          "s1"
+        ],
+        [
+          "append",
+          "s1",
+          "c",
+          {
+            "v": 3
+          }
+        ],
+        [
+          "get_state_at",
+          "s1",
+          2
+        ]
+      ],
+      "expected": [
+        null,
+        0,
+        1,
+        1,
+        2,
+        {
+          "v": 3
+        }
+      ]
+    },
+    {
+      "name": "Multiple snapshots",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "append",
+          "s1",
+          "a",
+          {
+            "x": 1
+          }
+        ],
+        [
+          "create_snapshot",
+          "s1"
+        ],
+        [
+          "append",
+          "s1",
+          "b",
+          {
+            "x": 2
+          }
+        ],
+        [
+          "create_snapshot",
+          "s1"
+        ],
+        [
+          "append",
+          "s1",
+          "c",
+          {
+            "x": 3
+          }
+        ],
+        [
+          "get_current_state",
+          "s1"
+        ]
+      ],
+      "expected": [
+        null,
+        0,
+        0,
+        1,
+        1,
+        2,
+        {
+          "x": 3
+        }
+      ]
+    },
+    {
+      "name": "State correct without snapshot",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "append",
+          "s1",
+          "a",
+          {
+            "k1": "v1"
+          }
+        ],
+        [
+          "append",
+          "s1",
+          "b",
+          {
+            "k2": "v2"
+          }
+        ],
+        [
+          "get_current_state",
+          "s1"
+        ],
+        [
+          "get_events",
+          "s1"
+        ],
+        [
+          "get_events_from",
+          "s1",
+          1
+        ],
+        [
+          "count_events",
+          "s1"
+        ],
+        [
+          "get_event",
+          "s1",
+          0
+        ],
+        [
+          "list_streams"
+        ]
+      ],
+      "expected": [
+        null,
+        0,
+        1,
+        {
+          "k1": "v1",
+          "k2": "v2"
+        },
+        [
+          {
+            "position": 0,
+            "event_type": "a",
+            "data": {
+              "k1": "v1"
+            }
+          },
+          {
+            "position": 1,
+            "event_type": "b",
+            "data": {
+              "k2": "v2"
+            }
+          }
+        ],
+        [
+          {
+            "position": 1,
+            "event_type": "b",
+            "data": {
+              "k2": "v2"
+            }
+          }
+        ],
+        2,
+        {
+          "position": 0,
+          "event_type": "a",
+          "data": {
+            "k1": "v1"
+          }
+        },
+        [
+          "s1"
+        ]
+      ]
+    },
+    {
+      "name": "Get state at version before snapshot replays from start",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "append",
+          "s1",
+          "a",
+          {
+            "v": 1
+          }
+        ],
+        [
+          "append",
+          "s1",
+          "b",
+          {
+            "v": 2
+          }
+        ],
+        [
+          "append",
+          "s1",
+          "c",
+          {
+            "v": 3
+          }
+        ],
+        [
+          "create_snapshot",
+          "s1"
+        ],
+        [
+          "get_state_at",
+          "s1",
+          0
+        ]
+      ],
+      "expected": [
+        null,
+        0,
+        1,
+        2,
+        2,
+        {
+          "v": 1
+        }
+      ]
+    },
+    {
+      "name": "Snapshot preserves full state",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "append",
+          "s1",
+          "a",
+          {
+            "name": "alice"
+          }
+        ],
+        [
+          "append",
+          "s1",
+          "b",
+          {
+            "age": 30
+          }
+        ],
+        [
+          "create_snapshot",
+          "s1"
+        ],
+        [
+          "append",
+          "s1",
+          "c",
+          {
+            "name": "bob"
+          }
+        ],
+        [
+          "get_current_state",
+          "s1"
+        ]
+      ],
+      "expected": [
+        null,
+        0,
+        1,
+        1,
+        2,
+        {
+          "name": "bob",
+          "age": 30
+        }
+      ]
+    }
+  ]
+}

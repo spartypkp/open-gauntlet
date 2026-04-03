@@ -1,0 +1,308 @@
+{
+  "visible": [
+    {
+      "name": "Set and get a field",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "set",
+          "A",
+          "B",
+          "E"
+        ],
+        [
+          "get",
+          "A",
+          "B"
+        ]
+      ],
+      "expected": [
+        null,
+        null,
+        "E"
+      ]
+    },
+    {
+      "name": "Get missing field returns None",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "set",
+          "A",
+          "B",
+          "E"
+        ],
+        [
+          "get",
+          "A",
+          "C"
+        ]
+      ],
+      "expected": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "name": "Delete existing field returns true, missing returns false",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "set",
+          "A",
+          "B",
+          "E"
+        ],
+        [
+          "delete",
+          "A",
+          "B"
+        ],
+        [
+          "delete",
+          "A",
+          "B"
+        ]
+      ],
+      "expected": [
+        null,
+        null,
+        true,
+        false
+      ]
+    }
+  ],
+  "hidden": [
+    {
+      "name": "Set overwrites existing field",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "set",
+          "A",
+          "B",
+          "old"
+        ],
+        [
+          "set",
+          "A",
+          "B",
+          "new"
+        ],
+        [
+          "get",
+          "A",
+          "B"
+        ]
+      ],
+      "expected": [
+        null,
+        null,
+        null,
+        "new"
+      ]
+    },
+    {
+      "name": "Get on non-existent key returns None",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "get",
+          "A",
+          "B"
+        ]
+      ],
+      "expected": [
+        null,
+        null
+      ]
+    },
+    {
+      "name": "Delete last field makes record non-existent",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "set",
+          "A",
+          "B",
+          "val"
+        ],
+        [
+          "delete",
+          "A",
+          "B"
+        ],
+        [
+          "get",
+          "A",
+          "B"
+        ]
+      ],
+      "expected": [
+        null,
+        null,
+        true,
+        null
+      ]
+    },
+    {
+      "name": "Multiple independent records",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "set",
+          "A",
+          "X",
+          "1"
+        ],
+        [
+          "set",
+          "B",
+          "X",
+          "2"
+        ],
+        [
+          "get",
+          "A",
+          "X"
+        ],
+        [
+          "get",
+          "B",
+          "X"
+        ]
+      ],
+      "expected": [
+        null,
+        null,
+        null,
+        "1",
+        "2"
+      ]
+    },
+    {
+      "name": "Delete field on non-existent key returns false",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "delete",
+          "ghost",
+          "field"
+        ]
+      ],
+      "expected": [
+        null,
+        false
+      ]
+    },
+    {
+      "name": "Multiple fields on same key",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "set",
+          "A",
+          "name",
+          "alice"
+        ],
+        [
+          "set",
+          "A",
+          "age",
+          "30"
+        ],
+        [
+          "get",
+          "A",
+          "name"
+        ],
+        [
+          "get",
+          "A",
+          "age"
+        ],
+        [
+          "delete",
+          "A",
+          "name"
+        ],
+        [
+          "get",
+          "A",
+          "age"
+        ]
+      ],
+      "expected": [
+        null,
+        null,
+        null,
+        "alice",
+        "30",
+        true,
+        "30"
+      ]
+    },
+    {
+      "name": "Re-add after deleting last field",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "set",
+          "A",
+          "X",
+          "val"
+        ],
+        [
+          "delete",
+          "A",
+          "X"
+        ],
+        [
+          "get",
+          "A",
+          "X"
+        ],
+        [
+          "set",
+          "A",
+          "Y",
+          "new"
+        ],
+        [
+          "get",
+          "A",
+          "Y"
+        ]
+      ],
+      "expected": [
+        null,
+        null,
+        true,
+        null,
+        null,
+        "new"
+      ]
+    }
+  ]
+}

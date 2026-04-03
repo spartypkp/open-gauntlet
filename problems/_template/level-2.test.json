@@ -1,0 +1,124 @@
+{
+  "visible": [
+    {
+      "name": "Get range returns entries in time window",
+      "operations": [
+        ["init"],
+        ["set", "a", 1, 1],
+        ["set", "a", 2, 3],
+        ["set", "a", 3, 5],
+        ["get_range", "a", 2, 4]
+      ],
+      "expected": [
+        "",
+        "",
+        "",
+        "",
+        "[[3, 2]]"
+      ]
+    },
+    {
+      "name": "Keys at timestamp",
+      "operations": [
+        ["init"],
+        ["set", "a", 1, 1],
+        ["set", "b", 2, 3],
+        ["keys_at", 2]
+      ],
+      "expected": [
+        "",
+        "",
+        "",
+        "['a']"
+      ]
+    }
+  ],
+  "hidden": [
+    {
+      "name": "Get range empty result",
+      "operations": [
+        ["init"],
+        ["set", "a", 1, 1],
+        ["get_range", "a", 5, 10]
+      ],
+      "expected": [
+        "",
+        "",
+        "[]"
+      ]
+    },
+    {
+      "name": "Get range inclusive boundaries",
+      "operations": [
+        ["init"],
+        ["set", "a", 10, 5],
+        ["set", "a", 20, 10],
+        ["get_range", "a", 5, 10]
+      ],
+      "expected": [
+        "",
+        "",
+        "",
+        "[[5, 10], [10, 20]]"
+      ]
+    },
+    {
+      "name": "Keys at includes all keys with entries at or before",
+      "operations": [
+        ["init"],
+        ["set", "c", 1, 1],
+        ["set", "a", 2, 2],
+        ["set", "b", 3, 3],
+        ["keys_at", 3]
+      ],
+      "expected": [
+        "",
+        "",
+        "",
+        "",
+        "['a', 'b', 'c']"
+      ]
+    },
+    {
+      "name": "Latest keys returns by most recent write",
+      "operations": [
+        ["init"],
+        ["set", "old", 1, 1],
+        ["set", "mid", 2, 5],
+        ["set", "new", 3, 10],
+        ["latest_keys", 2]
+      ],
+      "expected": [
+        "",
+        "",
+        "",
+        "",
+        "[['new', 3], ['mid', 2]]"
+      ]
+    },
+    {
+      "name": "Latest keys with n larger than key count",
+      "operations": [
+        ["init"],
+        ["set", "a", 1, 1],
+        ["latest_keys", 5]
+      ],
+      "expected": [
+        "",
+        "",
+        "[['a', 1]]"
+      ]
+    },
+    {
+      "name": "Get range on missing key",
+      "operations": [
+        ["init"],
+        ["get_range", "missing", 0, 100]
+      ],
+      "expected": [
+        "",
+        "[]"
+      ]
+    }
+  ]
+}

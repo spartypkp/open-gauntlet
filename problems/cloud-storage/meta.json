@@ -1,0 +1,19 @@
+{
+  "title": "Cloud File Storage",
+  "difficulty": "medium",
+  "tags": [
+    "design",
+    "storage",
+    "capacity",
+    "compression"
+  ],
+  "time_limit_minutes": 90,
+  "languages": [
+    "python"
+  ],
+  "class_name": "CloudStorage",
+  "confirmed_at": [
+    "Dropbox",
+    "Anthropic"
+  ]
+}

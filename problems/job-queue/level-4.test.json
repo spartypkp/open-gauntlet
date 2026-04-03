@@ -1,0 +1,385 @@
+{
+  "visible": [
+    {
+      "name": "Visibility timeout returns job to queue",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "enqueue",
+          "a",
+          {}
+        ],
+        [
+          "dequeue",
+          30
+        ],
+        [
+          "check_timeouts",
+          35
+        ],
+        [
+          "get_status",
+          "a"
+        ],
+        [
+          "dequeue"
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        "a",
+        [
+          "a"
+        ],
+        "pending",
+        "a"
+      ]
+    },
+    {
+      "name": "Extend visibility keeps job running",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "enqueue",
+          "a",
+          {}
+        ],
+        [
+          "dequeue",
+          30
+        ],
+        [
+          "extend_visibility",
+          "a",
+          20
+        ],
+        [
+          "check_timeouts",
+          40
+        ],
+        [
+          "get_status",
+          "a"
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        "a",
+        true,
+        [],
+        "running"
+      ]
+    },
+    {
+      "name": "Get running jobs with time remaining",
+      "operations": [
+        ["init"],
+        ["enqueue", "a", {}],
+        ["dequeue", 30],
+        ["check_timeouts", 10],
+        ["get_running_jobs"]
+      ],
+      "expected": [
+        null,
+        true,
+        "a",
+        [],
+        [["a", 20]]
+      ]
+    }
+  ],
+  "hidden": [
+    {
+      "name": "No timeout means no auto-return",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "enqueue",
+          "a",
+          {}
+        ],
+        [
+          "dequeue"
+        ],
+        [
+          "check_timeouts",
+          9999
+        ],
+        [
+          "get_status",
+          "a"
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        "a",
+        [],
+        "running"
+      ]
+    },
+    {
+      "name": "Extend on completed job",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "enqueue",
+          "a",
+          {}
+        ],
+        [
+          "dequeue",
+          30
+        ],
+        [
+          "complete",
+          "a"
+        ],
+        [
+          "extend_visibility",
+          "a",
+          10
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        "a",
+        true,
+        false
+      ]
+    },
+    {
+      "name": "Extend non-running job",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "enqueue",
+          "a",
+          {}
+        ],
+        [
+          "extend_visibility",
+          "a",
+          10
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        false
+      ]
+    },
+    {
+      "name": "Extend job with no timeout",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "enqueue",
+          "a",
+          {}
+        ],
+        [
+          "dequeue"
+        ],
+        [
+          "extend_visibility",
+          "a",
+          10
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        "a",
+        false
+      ]
+    },
+    {
+      "name": "Check timeouts before expiry returns empty",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "enqueue",
+          "a",
+          {}
+        ],
+        [
+          "dequeue",
+          30
+        ],
+        [
+          "check_timeouts",
+          25
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        "a",
+        []
+      ]
+    },
+    {
+      "name": "Timed out job keeps priority",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "enqueue",
+          "high",
+          {},
+          10
+        ],
+        [
+          "enqueue",
+          "low",
+          {},
+          1
+        ],
+        [
+          "dequeue",
+          5
+        ],
+        [
+          "check_timeouts",
+          10
+        ],
+        [
+          "dequeue"
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        true,
+        "high",
+        [
+          "high"
+        ],
+        "high"
+      ]
+    },
+    {
+      "name": "Get running jobs",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "enqueue",
+          "a",
+          {}
+        ],
+        [
+          "enqueue",
+          "b",
+          {}
+        ],
+        [
+          "dequeue",
+          30
+        ],
+        [
+          "dequeue"
+        ],
+        [
+          "check_timeouts",
+          10
+        ],
+        [
+          "get_running_jobs"
+        ],
+        [
+          "queue_length"
+        ],
+        [
+          "peek",
+          1
+        ],
+        [
+          "get_status",
+          "a"
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        true,
+        "a",
+        "b",
+        [],
+        [
+          [
+            "a",
+            20
+          ],
+          [
+            "b",
+            null
+          ]
+        ],
+        0,
+        [],
+        "running"
+      ]
+    },
+    {
+      "name": "Multiple timeouts",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "enqueue",
+          "a",
+          {}
+        ],
+        [
+          "enqueue",
+          "b",
+          {}
+        ],
+        [
+          "dequeue",
+          10
+        ],
+        [
+          "dequeue",
+          20
+        ],
+        [
+          "check_timeouts",
+          15
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        true,
+        "a",
+        "b",
+        [
+          "a"
+        ]
+      ]
+    }
+  ]
+}

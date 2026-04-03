@@ -1,0 +1,331 @@
+{
+  "visible": [
+    {
+      "name": "top_workers returns top N by total time descending",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "add_worker",
+          "alice",
+          "engineer",
+          100
+        ],
+        [
+          "add_worker",
+          "bob",
+          "analyst",
+          100
+        ],
+        [
+          "register",
+          "alice",
+          1
+        ],
+        [
+          "register",
+          "alice",
+          10
+        ],
+        [
+          "register",
+          "bob",
+          2
+        ],
+        [
+          "register",
+          "bob",
+          5
+        ],
+        [
+          "top_workers",
+          2
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        true,
+        "registered",
+        "registered",
+        "registered",
+        "registered",
+        [
+          "alice(9)",
+          "bob(3)"
+        ]
+      ]
+    },
+    {
+      "name": "top_workers with n=1 returns highest worker",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "add_worker",
+          "alice",
+          "engineer",
+          100
+        ],
+        [
+          "add_worker",
+          "bob",
+          "analyst",
+          100
+        ],
+        [
+          "register",
+          "alice",
+          1
+        ],
+        [
+          "register",
+          "alice",
+          10
+        ],
+        [
+          "register",
+          "bob",
+          2
+        ],
+        [
+          "register",
+          "bob",
+          5
+        ],
+        [
+          "top_workers",
+          1
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        true,
+        "registered",
+        "registered",
+        "registered",
+        "registered",
+        [
+          "alice(9)"
+        ]
+      ]
+    }
+  ],
+  "hidden": [
+    {
+      "name": "Ties broken alphabetically ascending",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "add_worker",
+          "bob",
+          "engineer",
+          100
+        ],
+        [
+          "add_worker",
+          "alice",
+          "engineer",
+          100
+        ],
+        [
+          "register",
+          "alice",
+          1
+        ],
+        [
+          "register",
+          "alice",
+          11
+        ],
+        [
+          "register",
+          "bob",
+          2
+        ],
+        [
+          "register",
+          "bob",
+          12
+        ],
+        [
+          "top_workers",
+          2
+        ],
+        [
+          "get_total",
+          "alice"
+        ],
+        [
+          "get_total",
+          "bob"
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        true,
+        "registered",
+        "registered",
+        "registered",
+        "registered",
+        [
+          "alice(10)",
+          "bob(10)"
+        ],
+        10,
+        10
+      ]
+    },
+    {
+      "name": "n greater than number of workers returns all",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "add_worker",
+          "alice",
+          "engineer",
+          100
+        ],
+        [
+          "register",
+          "alice",
+          1
+        ],
+        [
+          "register",
+          "alice",
+          5
+        ],
+        [
+          "top_workers",
+          10
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        "registered",
+        "registered",
+        [
+          "alice(4)"
+        ]
+      ]
+    },
+    {
+      "name": "Worker still in office contributes only completed intervals",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "add_worker",
+          "alice",
+          "engineer",
+          100
+        ],
+        [
+          "add_worker",
+          "bob",
+          "engineer",
+          100
+        ],
+        [
+          "register",
+          "alice",
+          1
+        ],
+        [
+          "register",
+          "alice",
+          10
+        ],
+        [
+          "register",
+          "bob",
+          2
+        ],
+        [
+          "top_workers",
+          2
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        true,
+        "registered",
+        "registered",
+        "registered",
+        [
+          "alice(9)",
+          "bob(0)"
+        ]
+      ]
+    },
+    {
+      "name": "Multiple shifts accumulate for ranking",
+      "operations": [
+        ["init"],
+        ["add_worker", "alice", "engineer", 100],
+        ["add_worker", "bob", "engineer", 100],
+        ["register", "alice", 1],
+        ["register", "alice", 3],
+        ["register", "alice", 5],
+        ["register", "alice", 8],
+        ["register", "bob", 0],
+        ["register", "bob", 10],
+        ["top_workers", 2]
+      ],
+      "expected": [
+        null, true, true,
+        "registered", "registered", "registered", "registered",
+        "registered", "registered",
+        ["bob(10)", "alice(5)"]
+      ]
+    },
+    {
+      "name": "Three workers ranked correctly",
+      "operations": [
+        ["init"],
+        ["add_worker", "alice", "engineer", 100],
+        ["add_worker", "bob", "analyst", 80],
+        ["add_worker", "carol", "manager", 120],
+        ["register", "carol", 1],
+        ["register", "carol", 20],
+        ["register", "alice", 2],
+        ["register", "alice", 7],
+        ["register", "bob", 3],
+        ["register", "bob", 6],
+        ["top_workers", 3]
+      ],
+      "expected": [
+        null, true, true, true,
+        "registered", "registered",
+        "registered", "registered",
+        "registered", "registered",
+        ["carol(19)", "alice(5)", "bob(3)"]
+      ]
+    },
+    {
+      "name": "top_workers with no shifts returns zero hours",
+      "operations": [
+        ["init"],
+        ["add_worker", "alice", "engineer", 100],
+        ["add_worker", "bob", "analyst", 80],
+        ["top_workers", 2]
+      ],
+      "expected": [
+        null, true, true,
+        ["alice(0)", "bob(0)"]
+      ]
+    }
+  ]
+}

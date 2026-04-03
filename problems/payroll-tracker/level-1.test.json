@@ -1,0 +1,234 @@
+{
+  "visible": [
+    {
+      "name": "Register entry and exit, get total time",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "add_worker",
+          "alice",
+          "engineer",
+          100
+        ],
+        [
+          "register",
+          "alice",
+          9
+        ],
+        [
+          "register",
+          "alice",
+          17
+        ],
+        [
+          "get_total",
+          "alice"
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        "registered",
+        "registered",
+        8
+      ]
+    },
+    {
+      "name": "Incomplete interval not counted until exit",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "add_worker",
+          "bob",
+          "analyst",
+          50
+        ],
+        [
+          "register",
+          "bob",
+          10
+        ],
+        [
+          "get_total",
+          "bob"
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        "registered",
+        0
+      ]
+    }
+  ],
+  "hidden": [
+    {
+      "name": "Duplicate worker returns false",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "add_worker",
+          "alice",
+          "engineer",
+          100
+        ],
+        [
+          "add_worker",
+          "alice",
+          "analyst",
+          80
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        false
+      ]
+    },
+    {
+      "name": "Register for non-existent worker returns None",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "register",
+          "ghost",
+          10
+        ]
+      ],
+      "expected": [
+        null,
+        null
+      ]
+    },
+    {
+      "name": "Get total for non-existent worker returns None",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "get_total",
+          "ghost"
+        ]
+      ],
+      "expected": [
+        null,
+        null
+      ]
+    },
+    {
+      "name": "Multiple entry-exit pairs accumulate",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "add_worker",
+          "alice",
+          "engineer",
+          100
+        ],
+        [
+          "register",
+          "alice",
+          10
+        ],
+        [
+          "register",
+          "alice",
+          14
+        ],
+        [
+          "register",
+          "alice",
+          16
+        ],
+        [
+          "register",
+          "alice",
+          20
+        ],
+        [
+          "get_total",
+          "alice"
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        "registered",
+        "registered",
+        "registered",
+        "registered",
+        8
+      ]
+    },
+    {
+      "name": "Multiple workers independent",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "add_worker",
+          "alice",
+          "engineer",
+          100
+        ],
+        [
+          "add_worker",
+          "bob",
+          "analyst",
+          50
+        ],
+        [
+          "register",
+          "alice",
+          1
+        ],
+        [
+          "register",
+          "alice",
+          6
+        ],
+        [
+          "register",
+          "bob",
+          2
+        ],
+        [
+          "register",
+          "bob",
+          10
+        ],
+        [
+          "get_total",
+          "alice"
+        ],
+        [
+          "get_total",
+          "bob"
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        true,
+        "registered",
+        "registered",
+        "registered",
+        "registered",
+        5,
+        8
+      ]
+    }
+  ]
+}

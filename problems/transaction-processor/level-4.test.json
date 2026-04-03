@@ -1,0 +1,122 @@
+{
+  "visible": [
+    {
+      "name": "Basic merge combines balances",
+      "operations": [
+        ["init"],
+        ["create_account", "alice", 1000],
+        ["create_account", "bob", 500],
+        ["merge_accounts", "alice", "bob"],
+        ["get_balance", "alice"],
+        ["get_balance", "bob"]
+      ],
+      "expected": [null, true, true, true, 1500.0, null]
+    },
+    {
+      "name": "Get balance at past timestamp",
+      "operations": [
+        ["init"],
+        ["create_account", "alice", 1000],
+        ["deposit", "alice", 500, 5],
+        ["deposit", "alice", 300, 10],
+        ["get_balance_at", "alice", 3],
+        ["get_balance_at", "alice", 5],
+        ["get_balance_at", "alice", 10]
+      ],
+      "expected": [null, true, 1500.0, 1800.0, 1000.0, 1500.0, 1800.0]
+    }
+  ],
+  "hidden": [
+    {
+      "name": "Merge self returns error",
+      "operations": [
+        ["init"],
+        ["create_account", "alice", 1000],
+        ["merge_accounts", "alice", "alice"]
+      ],
+      "expected": [null, true, false]
+    },
+    {
+      "name": "Merge non-existent account",
+      "operations": [
+        ["init"],
+        ["create_account", "alice", 1000],
+        ["merge_accounts", "alice", "ghost"]
+      ],
+      "expected": [null, true, null]
+    },
+    {
+      "name": "Merged account becomes unreachable",
+      "operations": [
+        ["init"],
+        ["create_account", "alice", 500],
+        ["create_account", "bob", 200],
+        ["merge_accounts", "alice", "bob"],
+        ["deposit", "bob", 100, 20]
+      ],
+      "expected": [null, true, true, true, null]
+    },
+    {
+      "name": "Get balance at timestamp zero returns initial balance",
+      "operations": [
+        ["init"],
+        ["create_account", "alice", 1000],
+        ["deposit", "alice", 100, 10],
+        ["get_balance_at", "alice", 0]
+      ],
+      "expected": [null, true, 1100.0, 1000.0]
+    },
+    {
+      "name": "Get balance at for non-existent account",
+      "operations": [
+        ["init"],
+        ["get_balance_at", "ghost", 5]
+      ],
+      "expected": [null, null]
+    },
+    {
+      "name": "Merged account historical balance accessible",
+      "operations": [
+        ["init"],
+        ["create_account", "alice", 1000],
+        ["create_account", "bob", 500],
+        ["deposit", "bob", 100, 5],
+        ["merge_accounts", "alice", "bob"],
+        ["get_balance_at", "bob", 5]
+      ],
+      "expected": [null, true, true, 600.0, true, 600.0]
+    },
+    {
+      "name": "Get balance at for independent accounts",
+      "operations": [
+        ["init"],
+        ["create_account", "alice", 1000],
+        ["create_account", "bob", 500],
+        ["deposit", "alice", 200, 5],
+        ["deposit", "bob", 100, 8],
+        ["get_balance_at", "alice", 5],
+        ["get_balance_at", "bob", 8],
+        ["get_balance", "alice"],
+        ["get_balance", "bob"],
+        ["transfer", "alice", "bob", 100, 10],
+        ["get_balance", "alice"],
+        ["top_spenders", 1]
+      ],
+      "expected": [null, true, true, 1200.0, 600.0, 1200.0, 600.0, 1200.0, 600.0, true, 1100.0, ["alice(100)"]]
+    },
+    {
+      "name": "Pending payment to merged account redirects to survivor",
+      "operations": [
+        ["init"],
+        ["create_account", "alice", 1000],
+        ["create_account", "bob", 0],
+        ["create_account", "carol", 200],
+        ["schedule_payment", "carol", "bob", 100, 20],
+        ["merge_accounts", "alice", "bob"],
+        ["deposit", "alice", 0, 25],
+        ["get_balance", "alice"]
+      ],
+      "expected": [null, true, true, true, "payment_0", true, 1100.0, 1100.0]
+    }
+  ]
+}

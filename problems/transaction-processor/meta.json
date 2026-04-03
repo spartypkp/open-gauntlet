@@ -1,0 +1,19 @@
+{
+  "title": "Banking System",
+  "difficulty": "hard",
+  "tags": [
+    "fintech",
+    "state-management",
+    "design"
+  ],
+  "time_limit_minutes": 90,
+  "languages": [
+    "python"
+  ],
+  "class_name": "TransactionProcessor",
+  "confirmed_at": [
+    "Coinbase",
+    "Ramp",
+    "eBay"
+  ]
+}

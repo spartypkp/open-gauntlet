@@ -1,0 +1,274 @@
+{
+  "visible": [
+    {
+      "name": "Basic set and get",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "set",
+          "a",
+          1,
+          1
+        ],
+        [
+          "get",
+          "a",
+          1
+        ]
+      ],
+      "expected": [
+        "",
+        "",
+        "1"
+      ]
+    },
+    {
+      "name": "Get returns latest value at or before timestamp",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "set",
+          "a",
+          1,
+          1
+        ],
+        [
+          "set",
+          "a",
+          2,
+          3
+        ],
+        [
+          "get",
+          "a",
+          2
+        ],
+        [
+          "get",
+          "a",
+          3
+        ]
+      ],
+      "expected": [
+        "",
+        "",
+        "",
+        "1",
+        "2"
+      ]
+    },
+    {
+      "name": "Get missing key returns None",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "get",
+          "missing",
+          5
+        ]
+      ],
+      "expected": [
+        "",
+        null
+      ]
+    }
+  ],
+  "hidden": [
+    {
+      "name": "Get before any timestamp returns None",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "set",
+          "a",
+          1,
+          5
+        ],
+        [
+          "get",
+          "a",
+          3
+        ]
+      ],
+      "expected": [
+        "",
+        "",
+        null
+      ]
+    },
+    {
+      "name": "Overwrite at same timestamp",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "set",
+          "a",
+          1,
+          1
+        ],
+        [
+          "set",
+          "a",
+          99,
+          1
+        ],
+        [
+          "get",
+          "a",
+          1
+        ]
+      ],
+      "expected": [
+        "",
+        "",
+        "",
+        "99"
+      ]
+    },
+    {
+      "name": "Delete existing entry",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "set",
+          "a",
+          1,
+          1
+        ],
+        [
+          "set",
+          "a",
+          2,
+          3
+        ],
+        [
+          "delete",
+          "a",
+          1
+        ],
+        [
+          "get",
+          "a",
+          2
+        ]
+      ],
+      "expected": [
+        "",
+        "",
+        "",
+        true,
+        null
+      ]
+    },
+    {
+      "name": "Delete non-existent entry returns False",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "delete",
+          "a",
+          99
+        ]
+      ],
+      "expected": [
+        "",
+        false
+      ]
+    },
+    {
+      "name": "Multiple keys independent",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "set",
+          "a",
+          1,
+          1
+        ],
+        [
+          "set",
+          "b",
+          2,
+          1
+        ],
+        [
+          "get",
+          "a",
+          1
+        ],
+        [
+          "get",
+          "b",
+          1
+        ]
+      ],
+      "expected": [
+        "",
+        "",
+        "",
+        "1",
+        "2"
+      ]
+    },
+    {
+      "name": "Get at exact timestamp after delete falls through",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "set",
+          "x",
+          10,
+          1
+        ],
+        [
+          "set",
+          "x",
+          20,
+          2
+        ],
+        [
+          "set",
+          "x",
+          30,
+          3
+        ],
+        [
+          "delete",
+          "x",
+          2
+        ],
+        [
+          "get",
+          "x",
+          2
+        ]
+      ],
+      "expected": [
+        "",
+        "",
+        "",
+        "",
+        true,
+        "10"
+      ]
+    }
+  ]
+}

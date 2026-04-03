@@ -1,0 +1,298 @@
+{
+  "visible": [
+    {
+      "name": "Enqueue and dequeue FIFO",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "enqueue",
+          "a",
+          {}
+        ],
+        [
+          "enqueue",
+          "b",
+          {}
+        ],
+        [
+          "dequeue"
+        ],
+        [
+          "dequeue"
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        true,
+        "a",
+        "b"
+      ]
+    },
+    {
+      "name": "Fail and status",
+      "operations": [
+        ["init"],
+        ["enqueue", "a", {}],
+        ["dequeue"],
+        ["fail", "a"],
+        ["get_status", "a"]
+      ],
+      "expected": [
+        null,
+        true,
+        "a",
+        true,
+        "failed"
+      ]
+    },
+    {
+      "name": "Complete and status",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "enqueue",
+          "a",
+          {}
+        ],
+        [
+          "dequeue"
+        ],
+        [
+          "complete",
+          "a"
+        ],
+        [
+          "get_status",
+          "a"
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        "a",
+        true,
+        "completed"
+      ]
+    }
+  ],
+  "hidden": [
+    {
+      "name": "Duplicate enqueue",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "enqueue",
+          "a",
+          {}
+        ],
+        [
+          "enqueue",
+          "a",
+          {}
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        false
+      ]
+    },
+    {
+      "name": "Dequeue empty queue",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "dequeue"
+        ]
+      ],
+      "expected": [
+        null,
+        null
+      ]
+    },
+    {
+      "name": "Complete non-running job",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "enqueue",
+          "a",
+          {}
+        ],
+        [
+          "complete",
+          "a"
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        false
+      ]
+    },
+    {
+      "name": "Fail non-running job",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "enqueue",
+          "a",
+          {}
+        ],
+        [
+          "fail",
+          "a"
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        false
+      ]
+    },
+    {
+      "name": "Status not found",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "get_status",
+          "ghost"
+        ]
+      ],
+      "expected": [
+        null,
+        "not_found"
+      ]
+    },
+    {
+      "name": "Fail a running job",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "enqueue",
+          "a",
+          {}
+        ],
+        [
+          "dequeue"
+        ],
+        [
+          "fail",
+          "a"
+        ],
+        [
+          "get_status",
+          "a"
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        "a",
+        true,
+        "failed"
+      ]
+    },
+    {
+      "name": "Completed job blocks enqueue",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "enqueue",
+          "a",
+          {}
+        ],
+        [
+          "dequeue"
+        ],
+        [
+          "complete",
+          "a"
+        ],
+        [
+          "enqueue",
+          "a",
+          {}
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        "a",
+        true,
+        false
+      ]
+    },
+    {
+      "name": "Multiple jobs lifecycle",
+      "operations": [
+        [
+          "init"
+        ],
+        [
+          "enqueue",
+          "a",
+          {}
+        ],
+        [
+          "enqueue",
+          "b",
+          {}
+        ],
+        [
+          "enqueue",
+          "c",
+          {}
+        ],
+        [
+          "dequeue"
+        ],
+        [
+          "complete",
+          "a"
+        ],
+        [
+          "dequeue"
+        ],
+        [
+          "fail",
+          "b"
+        ],
+        [
+          "get_status",
+          "c"
+        ]
+      ],
+      "expected": [
+        null,
+        true,
+        true,
+        true,
+        "a",
+        true,
+        "b",
+        true,
+        "pending"
+      ]
+    }
+  ]
+}
