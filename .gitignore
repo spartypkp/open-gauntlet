@@ -41,8 +41,6 @@ yarn-error.log*
 next-env.d.ts
 __pycache__/
 
-# solutions (reference answers — not for public distribution)
-problems/*/solutions/
 
 # personal progress tracking
 PROGRESS.md
